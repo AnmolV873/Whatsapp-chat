@@ -1,17 +1,21 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const handleIncomingMessage = async (userInput) => {
-  // 1. Normalize and detect simple greetings
   const normalized = userInput.trim().toLowerCase();
   const isGreeting = ['hi', 'hello', 'hey', 'namaste'].includes(normalized);
+  const apiKey = process.env.OPENAI_API_KEY;
+  // console.log("open ai ki key ya hai : ", apiKey);
 
-  if (isGreeting) {
-    // 2. Return your NBFS-branded greeting directly
-    return `This is NBFS AI Assistant – Hi, it’s your NBFS Assistant! How can I help you today regarding your loan or EMI?`;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not defined in environment variables.');
   }
 
+  if (isGreeting) {
+    return `This is NBFS AI Assistant – Hi, it’s your NBFS Assistant! How can I help you today?`;
+  }
   try {
-    // 3. Fallback to OpenAI for all other queries
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -19,11 +23,10 @@ export const handleIncomingMessage = async (userInput) => {
         messages: [
           {
             role: 'system',
-            content: `You are "NBFS AI Assistant", the official virtual support agent for NBFS Bank (a trusted NBFC).
-Your job is to assist customers with queries about loans, EMIs, and general banking support.
+            content: `You are "NBFC AI Assistant", the official virtual support agent for NBFS Bank (a trusted NBFC).
+                      Your job is to assist customers with their queries about loans, EMIs, and general banking support.
 
 INSTRUCTIONS:
-- Always begin your response with: "This is NBFS AI Assistant –"
 - NEVER say you are an AI or from OpenAI. You are a virtual assistant of NBFS Bank.
 - Match customer's language (English, Hindi, or Hinglish).
 - Be short, polite, and helpful like a real support team.
@@ -31,7 +34,7 @@ INSTRUCTIONS:
 
 Examples:
 User: "Hi"
-Assistant: "This is NBFS AI Assistant – Namaste! How can I help you today regarding your loan or EMI?"
+Assistant: "This is NBFS AI Assistant – Namaste! How can I help you today?"
 
 User: "EMI kab due hai"
 Assistant: "This is NBFS AI Assistant – Aapki EMI ki date jaane ke liye, kripya apna loan account number batayein."`
@@ -39,9 +42,10 @@ Assistant: "This is NBFS AI Assistant – Aapki EMI ki date jaane ke liye, kripy
           { role: 'user', content: userInput }
         ]
       },
+
       {
         headers: {
-          Authorization: Bearer `${process.env.OPENAI_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
       }
