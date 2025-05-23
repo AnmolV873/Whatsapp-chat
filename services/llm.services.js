@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const handleIncomingMessage = async (userInput) => {
-  console.log(userInput, 6) 
   try {
     const response = await axios.post(
       process.env.NBFC_LLM_API_URL,  
@@ -19,4 +18,4 @@ export const handleIncomingMessage = async (userInput) => {
     console.error('LLM Integration Error:', error.response?.data || error.message);
     return "NBFS AI Assistant – Sorry, something went wrong.";
   }
-};
+}
