@@ -3,10 +3,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const handleIncomingMessage = async (userInput) => {
+  console.log(userInput, 6) 
   try {
     const response = await axios.post(
-      process.env.NBFC_LLM_API_URL,
-      { query: userInput },
+      process.env.NBFC_LLM_API_URL,  
+      { query: userInput },       
       {
         headers: {
           'Content-Type': 'application/json',
